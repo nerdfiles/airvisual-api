@@ -124,7 +124,7 @@ interface Countries {
         await storedStates.then(async (statesRef) => {
           const statesList = statesRef.length ? statesRef.pop() : false;
           if (!statesList) {
-            console.log('Didn\'t find old states list');
+            console.log('⚠️ Didn\'t find old states list');
             const _key = { key: key };
             const _country = { country: country };
             const _paramsBundle = { ..._key, ..._country };
@@ -136,7 +136,7 @@ interface Countries {
               '?', 
               queryString.stringify(_paramsBundle)
             ].join('');
-            console.log(url)
+            //console.log(url)
 
             const airVisualStatesList = await got(url);
             const _now = new Date();
@@ -148,6 +148,7 @@ interface Countries {
             };
             // write air visual API response to NoSQL store
             await statesCollection.insertOne(newStatesList).then(async () => {
+              console.log('🆕 added new states for country:', country)
 
               // get most recent write to the states list
               const mostRecentStatesList = statesCollection.find({
@@ -162,7 +163,7 @@ interface Countries {
 
             });
           } else {
-            console.log('Found old states list')
+            console.log('🆗 Found old states list')
             responseStatesList = statesList;
           }
 
@@ -206,7 +207,7 @@ interface Countries {
         await storedCountries.then(async (countriesRef) => {
           const countriesList = countriesRef.length ? countriesRef.pop() : false;
           if (!countriesList) {
-            console.log('Didn\'t find old countries list');
+            console.log('⚠️ Didn\'t find old countries list');
             const _key = { key: key };
 
             var url = [
@@ -226,6 +227,7 @@ interface Countries {
             };
             // write air visual API response to NoSQL store
             await countriesCollection.insertOne(newCountriesList).then(async () => {
+              console.log('ℹ️ updated countries')
 
               // get most recent write to the countries list
               const mostRecentCountriesList = countriesCollection.find({}, {
@@ -240,7 +242,7 @@ interface Countries {
 
           } else { 
 
-            console.log('Found old countries list')
+            console.log('🆗 Found old countries list')
             responseCountriesList = countriesList;
           }
         });
@@ -286,7 +288,7 @@ interface Countries {
         await storedCities.then(async (citiesRef) => {
           const citiesList = citiesRef.length ? citiesRef.pop() : false;
           if (!citiesList) {
-            console.log('Didn\'t find old cities list');
+            console.log('⚠️ Didn\'t find old cities list');
             const _key = { key: key };
             const _state = { state: state };
             const _country = { country: country };
@@ -303,7 +305,7 @@ interface Countries {
               '?', 
               queryString.stringify(_paramsBundle)
             ].join('');
-            console.log(url)
+            //console.log(url);
 
             const airVisualCitiesList = await got(url);
             const _now = new Date();
@@ -314,8 +316,10 @@ interface Countries {
               country: country,
               _embedded: _body.data
             };
+
             // write air visual API response to NoSQL store
             await citiesCollection.insertOne(newCitiesList).then(async () => {
+              console.log(`🆕 added new cities for ${state}, ${country}`);
 
               // get most recent write to the cities list
               const mostRecentCitiesList = citiesCollection.find({
@@ -331,7 +335,7 @@ interface Countries {
 
             });
           } else {
-            console.log('Found old cities list')
+            console.log(`🆗 Found old cities list for ${state}, ${country}`)
             responseCitiesList = citiesList;
           }
 
@@ -378,6 +382,8 @@ interface Countries {
           ..._country 
         };
 
+        console.log(`🏙 Getting city data for ${city_name}, ${state}, ${country}`)
+
         var url = [
           weatherDataApiBase,
           sep,
@@ -392,8 +398,8 @@ interface Countries {
 
         return result;
       },
-      description: 'Get a city\'s data',
-      notes: 'Get a city\'s data',
+      description: '🏙 Get a city\'s data',
+      notes: '🏙 Get a city\'s data',
       tags: ['api'],
       validate: {
         query: {
