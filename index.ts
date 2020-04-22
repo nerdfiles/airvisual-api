@@ -4,6 +4,7 @@ import * as Vision from '@hapi/vision';
 import * as Hapi from '@hapi/hapi';
 const got = require('got')
 //const moment = require('moment')
+const colors = require('colors');
 const queryString = require('query-string')
 require('dotenv').config();
 
@@ -46,13 +47,14 @@ interface Countries {
 
 (async () => {
 
-  const host = process.env.MONGO_URL || 'localhost';
-  const connectionString = `mongodb://${host}/airvisual`;
+  const host = 'localhost';
+  const database = 'airvisual'
+  const connectionString = process.env.MONGODB_CONNECTION || `mongodb://${host}/${database}`;
   const connection = await MongoClient.connect(connectionString, {
     useNewUrlParser: true,
   });
 
-  console.log('mongo db is running at', connectionString);
+  console.log('mongo db is running at', colors.green(connectionString));
 
   const sep = '/';
   const weatherDataApiBase = 'https://api.airvisual.com/v2';
@@ -60,7 +62,7 @@ interface Countries {
   const countriesCollection = connection.db('airvisual').collection('country');
   const statesCollection = connection.db('airvisual').collection('state');
   const key = process.env.AIRVISUAL_KEY
-  console.log('using AirVisual key:', key)
+  console.log('using AirVisual key:', colors.green(key))
 
   await server.register([
     Inert,
@@ -405,5 +407,5 @@ interface Countries {
   ]);
 
   await server.start();
-  console.log(`server running at ${protocol}://${host}:${port}`);
+  console.log('server running at', colors.green(`${protocol}://${host}:${port}`));
 })();
