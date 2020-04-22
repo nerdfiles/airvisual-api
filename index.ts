@@ -3,7 +3,7 @@ import * as Inert from '@hapi/inert';
 import * as Vision from '@hapi/vision';
 import * as Hapi from '@hapi/hapi';
 const got = require('got')
-const moment = require('moment')
+//const moment = require('moment')
 const queryString = require('query-string')
 require('dotenv').config();
 
@@ -22,8 +22,8 @@ const server = new Hapi.Server({
   }
 });
 
-function addMinutes (date, minutes) {
-  return new Date(date.getTime() + minutes * 60000);
+function subtractMinutes (date, minutes) {
+  return new Date(date.getTime() - minutes * 60000);
 }
 
 interface Cities {
@@ -101,10 +101,11 @@ interface Countries {
         }
 
         const now = new Date();
+        const then = subtractMinutes(now, 43830)
         // update once a month
         const storedStates = statesCollection.find({
           createdAt: { 
-            $lt: addMinutes(now, 43830) 
+            $gt: then
           },
           country: country
         }).limit(1).toArray();
@@ -139,8 +140,9 @@ interface Countries {
 
               // get most recent write to the states list
               const mostRecentStatesList = statesCollection.find({
-                createdAt: { $lt: addMinutes(_now, 1) },
                 country: country
+              }, {
+                sort: { createdAt: -1 }
               }).limit(1).toArray();
               await mostRecentStatesList.then((mostRecentStatesListRef) => {
                 const _mostRecentStatesListRef = mostRecentStatesListRef.pop();
@@ -180,11 +182,14 @@ interface Countries {
         }
 
         const now = new Date();
+        const then = subtractMinutes(now, 43830)
         // update once a month
         const storedCountries = countriesCollection.find({
           createdAt: { 
-            $lt: addMinutes(now, 43830) 
+            $gt: then
           }
+        }, {
+          sort: { createdAt: -1 }
         }).limit(1).toArray();
 
         await storedCountries.then(async (countriesRef) => {
@@ -212,10 +217,11 @@ interface Countries {
             await countriesCollection.insertOne(newCountriesList).then(async () => {
 
               // get most recent write to the countries list
-              const mostRecentCountriesList = countriesCollection.find({
-                $lt: addMinutes(_now, 1),
+              const mostRecentCountriesList = countriesCollection.find({}, {
+                sort: { createdAt: -1 }
               }).limit(1).toArray();
               await mostRecentCountriesList.then(async (mostRecentCountriesListRef) => {
+                console.log(mostRecentCountriesListRef)
                 const _mostRecentCountriesListRef = mostRecentCountriesListRef.pop();
                 responseCountriesList = _mostRecentCountriesListRef;
               });
@@ -256,10 +262,11 @@ interface Countries {
         }
 
         const now = new Date();
+        const then = subtractMinutes(now, 43830)
         // update once a month
         const storedCities = citiesCollection.find({
           createdAt: { 
-            $lt: addMinutes(now, 43830) 
+            $gt: then
           },
           state: state,
           country: country
@@ -301,9 +308,10 @@ interface Countries {
 
               // get most recent write to the cities list
               const mostRecentCitiesList = citiesCollection.find({
-                createdAt: { $lt: addMinutes(_now, 1) },
                 state: state,
                 country: country
+              }, {
+                sort: { createdAt: -1 }
               }).limit(1).toArray();
               await mostRecentCitiesList.then((mostRecentCitiesListRef) => {
                 const _mostRecentCitiesListRef = mostRecentCitiesListRef.pop();
