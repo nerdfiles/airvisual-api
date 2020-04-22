@@ -2,10 +2,12 @@ import * as Joi from '@hapi/joi';
 import * as Inert from '@hapi/inert';
 import * as Vision from '@hapi/vision';
 import * as Hapi from '@hapi/hapi';
+
 const got = require('got')
 //const moment = require('moment')
 const colors = require('colors');
-const queryString = require('query-string')
+const queryString = require('query-string');
+const crypto = require("crypto");
 require('dotenv').config();
 
 import { MongoClient, ObjectId } from 'mongodb';
@@ -62,7 +64,14 @@ interface Countries {
   const countriesCollection = connection.db('airvisual').collection('country');
   const statesCollection = connection.db('airvisual').collection('state');
   const key = process.env.AIRVISUAL_KEY
-  console.log('using AirVisual key:', colors.green(key))
+  console.log('AirVisual Key (hashed):', 
+    colors.green(
+      crypto
+        .createHash("sha256")
+        .update(key)
+        .digest("hex")
+    )
+  )
 
   await server.register([
     Inert,
