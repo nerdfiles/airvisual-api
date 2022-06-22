@@ -32,7 +32,7 @@
     "@types/mongodb": "3.1.32",
     "colors": "^1.4.0",
     "dotenv": "^8.2.0",
-    "got": "^11.0.1",
+    "got": "^11.8.5",
     "hapi-swagger": "10.0.2",
     "mongodb": "3.3.0-beta2",
     "query-string": "^6.12.1",
